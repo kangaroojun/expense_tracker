@@ -35,7 +35,7 @@ model Account {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  userID        String   @id @default(uuid())
   accountID String   @unique
   account   Account  @relation(fields: [accountID], references: [accountID])
   ideas     Idea[]
@@ -50,7 +50,7 @@ model Idea {
   creationDate     DateTime   @default(now())
   modificationDate DateTime   @updatedAt
 
-  user    User      @relation(fields: [userID], references: [id])
+  user    User      @relation(fields: [userID], references: [userID])
   image   Image?    @relation(fields: [imageID], references: [imageID])
   categories Category[] @relation("IdeaCategories")
   tags     Tag[]
