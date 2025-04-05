@@ -17,10 +17,10 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const result = await accountService.login(username, password);
+    const result = await accountService.login(email, password);
     res.status(200).json(result);
   } catch (err: any) {
     res.status(401).json({ error: err.message });
