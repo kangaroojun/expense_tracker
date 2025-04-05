@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import logo from "../assets/Logo.png";
 import "./Login.css";
+import UserContext from "../UserContext";
 
-const LoginForm = () => {
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const { setUser } = useContext(UserContext);
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -19,16 +21,40 @@ const LoginForm = () => {
     setRememberMe(e.target.checked);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Remember Me:", rememberMe);
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-    setEmail("");
-    setPassword("");
-    setRememberMe(false);
+      const data = await response.json();
+
+      if (response.ok) {
+        setUser(data.user);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        console.log("Login successful:", data.user);
+      } else {
+        console.error("Login failed:", data.message);
+        alert(data.message || "Invalid email or password.");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setEmail("");
+      setPassword("");
+      setRememberMe(false);
+    }
   };
 
   const handleForgotPasswordClick = () => {
@@ -93,7 +119,7 @@ const LoginForm = () => {
 
                 {/* 2 column grid layout for inline styling */}
                 <div className="row mb-4">
-                  <div className="col d-flex justify-content-start">
+                  <div className="col text-align-left">
                     {/* Checkbox */}
                     <div className="form-check">
                       <input
@@ -113,7 +139,7 @@ const LoginForm = () => {
                     </div>
                   </div>
 
-                  <div className="col text-start">
+                  <div className="col text-start text-align-left">
                     {/* Forgot password link */}
                     <a href="#!" onClick={handleForgotPasswordClick}>
                       Forgot password?
@@ -135,6 +161,6 @@ const LoginForm = () => {
       </div>
     </section>
   );
-};
+}
 
 export default LoginForm;
