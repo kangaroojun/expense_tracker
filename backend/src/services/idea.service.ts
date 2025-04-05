@@ -1,5 +1,5 @@
 // services/idea.service.ts
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Tag } from '@prisma/client';
 import { ImageService } from './image.service';
 const prisma = new PrismaClient();
 
@@ -27,9 +27,9 @@ export class IdeaService {
         userID: data.userID,
         imageID: image?.imageID || undefined,
         categories: {
-          connect: data.categories.map(id => ({ id })),
+          connect: data.categories.map(categoryID => ({ categoryID })),
         },
-        tags: data.tags as any, // Prisma enums
+        tags: data.tags.map(tag => tag as Tag),
       },
     });
   }

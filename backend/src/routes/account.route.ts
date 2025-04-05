@@ -6,10 +6,10 @@ const router = Router();
 const accountService = new AccountService();
 
 router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const result = await accountService.register(username, email, password);
+    const result = await accountService.register(email, password);
     res.status(201).json(result);
   } catch (err: any) {
     res.status(400).json({ error: err.message });

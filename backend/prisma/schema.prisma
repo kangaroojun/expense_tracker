@@ -65,7 +65,7 @@ model Image {
 }
 
 model Category {
-  id          String   @id @default(uuid())
-  description String
+  categoryID  String   @id @default(uuid())
+  description String   @unique
   ideas       Idea[]   @relation("IdeaCategories")
 }
