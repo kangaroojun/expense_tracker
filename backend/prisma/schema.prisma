@@ -26,7 +26,6 @@ enum Tag {
 
 model Account {
   accountID String   @id @default(uuid())
-  username  String   @unique
   password  String
   email     String   @unique
   role      Role

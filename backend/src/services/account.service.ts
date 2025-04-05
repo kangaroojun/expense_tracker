@@ -7,11 +7,9 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'your_dev_secret';
 
 export class AccountService {
-  async register(username: string, email: string, plainPassword: string) {
+  async register(email: string, plainPassword: string) {
     const existingUser = await prisma.account.findFirst({
-      where: {
-        OR: [{ username }, { email }]
-      }
+      where: { email },
     });
 
     if (existingUser) {
@@ -22,21 +20,18 @@ export class AccountService {
 
     const account = await prisma.account.create({
       data: {
-        username,
         email,
         password: hashedPassword,
         role: 'User', // or any default role
       }
     });
 
-    // Optionally create User record linked to Account
     const user = await prisma.user.create({
       data: {
         accountID: account.accountID
       }
     });
 
-    // Optional: return a JWT
     const token = jwt.sign(
       {
         accountID: account.accountID,
@@ -49,7 +44,6 @@ export class AccountService {
     return { message: 'Account created successfully', token };
   }
 
-  // You already have this
     async login(email: string, plainPassword: string) {
         const account = await prisma.account.findUnique({
         where: { email },
