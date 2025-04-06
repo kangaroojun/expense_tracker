@@ -1,16 +1,31 @@
 // services/image.service.ts
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export class ImageService {
-  async createSketch(base64: string, format: string = 'png') {
-    return await prisma.image.create({
-      data: {
-        data: base64,
-        format,
-      },
-    });
-  }
+    async createSketch(data: {
+      paths: CanvasPath[];
+      base64: string;
+      format: string;
+      ideaID: string;
+    }) {
+      const imageData = {
+        paths: data.paths,
+        base64: data.base64,
+      };
+      
+      const safeJson = imageData as unknown as Prisma.InputJsonValue;
+      
+      await prisma.image.create({
+        data: {
+          data: safeJson,
+          format: data.format,
+          ideas: {
+            connect: { ideaID: data.ideaID },
+          },
+        },
+      });
+    }
 
   async updateSketch(imageID: string, base64: string) {
     return await prisma.image.update({
