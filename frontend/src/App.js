@@ -8,18 +8,27 @@ import UserContext from "./UserContext";
 import { useState } from "react";
 
 function App() {
-  const [user, setUser] = useState(() => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+  }, []);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <Router>
         <div>
           <Routes>
-            <Route path="/home" element={<Login />} />
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/idea" element={<Idea />} />
           </Routes>
         </div>
