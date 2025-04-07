@@ -41,7 +41,7 @@ const IdeaCard = ({ idea, onDelete, onRename }) => {
         </>
       ) : (
         <>
-          <h3>{idea.title}</h3>
+          <h3>{idea.name}</h3>
           <p className={`category ${getCategoryClass(idea.category)}`}>
             {idea.category}
           </p>
