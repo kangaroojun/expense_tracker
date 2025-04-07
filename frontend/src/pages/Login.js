@@ -2,14 +2,14 @@ import React, { useState, useContext } from "react";
 import logo from "../assets/Logo.png";
 import "./Login.css";
 import UserContext from "../UserContext";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const { setUser } = useContext(UserContext);
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
