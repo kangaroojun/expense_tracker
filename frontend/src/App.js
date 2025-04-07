@@ -5,7 +5,7 @@ import Login from "./pages/Login";
 import Idea from "./pages/Idea";
 import "bootstrap/dist/css/bootstrap.min.css";
 import UserContext from "./UserContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const [user, setUser] = useState(null);

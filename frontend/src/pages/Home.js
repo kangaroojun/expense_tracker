@@ -38,7 +38,7 @@ function Home() {
       <div className="idea-grid">
         {ideas.map((idea) => (
           <IdeaCard
-            key={idea.id}
+            key={idea.ideaID}
             idea={idea}
             onDelete={handleDelete}
             onRename={handleRename}
