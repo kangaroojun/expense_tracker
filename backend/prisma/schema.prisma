@@ -26,7 +26,6 @@ enum Tag {
 
 model Account {
   accountID String   @id @default(uuid())
-  username  String   @unique
   password  String
   email     String   @unique
   role      Role
@@ -46,27 +45,27 @@ model Idea {
   userID           String
   name             String
   content          String
-  imageID          String?
   creationDate     DateTime   @default(now())
   modificationDate DateTime   @updatedAt
 
   user    User      @relation(fields: [userID], references: [userID])
-  image   Image?    @relation(fields: [imageID], references: [imageID])
+  image   Image[]
   categories Category[] @relation("IdeaCategories")
   tags     Tag[]
 }
 
 model Image {
   imageID   String   @id @default(uuid())
-  data      String   // base64 string
+  ideaID    String
+  data      Json     // Store both canvas paths + base64 here
   format    String   // e.g., 'png'
   createdAt DateTime @default(now())
 
-  ideas     Idea[]
+  idea      Idea     @relation(fields: [ideaID], references: [ideaID])
 }
 
 model Category {
-  id          String   @id @default(uuid())
-  description String
+  categoryID  String   @id @default(uuid())
+  description String   @unique
   ideas       Idea[]   @relation("IdeaCategories")
 }
