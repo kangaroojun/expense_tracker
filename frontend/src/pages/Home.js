@@ -33,7 +33,7 @@ function Home() {
 
   return (
     <div className="home-container">
-      <h1>Hello {user?.name || "Guest"} 👋</h1>
+      {/* <h1>Hello {user?.name || "Guest"} 👋</h1> */}
       <h2>💡 Shitty Ideas Dump</h2>
       <div className="idea-grid">
         {ideas.map((idea) => (
