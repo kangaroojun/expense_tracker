@@ -71,6 +71,7 @@ export class IdeaService {
   async getAllIdeasWithImages() {
     const ideas = await prisma.idea.findMany({
       include: {
+        categories: true,
         image: true, // fetch the imageIDs related to each idea
       },
     });
