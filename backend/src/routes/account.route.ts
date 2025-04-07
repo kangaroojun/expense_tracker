@@ -27,4 +27,22 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.get('/', async (req, res) => {
+  try {
+    const result = await accountService.getAllAccounts();
+    res.status(200).json(result);
+  } catch (err: any) {
+    res.status(401).json({ error: err.message });
+  }
+});
+
+router.get('/user', async (req, res) => {
+  try {
+    const result = await accountService.getAllUsers();
+    res.status(200).json(result);
+  } catch (err: any) {
+    res.status(401).json({ error: err.message });
+  }
+});
+
 export default router;

@@ -2,6 +2,8 @@
 import express from 'express';
 import cors from 'cors';
 import accountRoutes from './routes/account.route';
+import ideaRoutes from './routes/idea.route';
+import imageRoutes from './routes/image.route';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,6 +15,12 @@ app.use(express.json());
 
 // Register account-related routes
 app.use('/account', accountRoutes);
+
+// Register idea-related routes
+app.use('/idea', ideaRoutes);
+
+// Register image-related routes
+app.use('/image', imageRoutes);
 
 app.get('/', (req, res) => {
   res.send('🚀 Dumb Ideas API is running');

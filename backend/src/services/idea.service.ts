@@ -22,7 +22,10 @@ export class IdeaService {
         content: data.content,
         userID: data.userID,
         categories: { 
-          connect: data.categories.map(desc => ({ description: desc })),
+          connectOrCreate: data.categories.map(desc => ({
+            where: { description: desc },
+            create: { description: desc },
+          }))
         },
         tags: data.tags.map(tag => tag as Tag),
       },
@@ -41,14 +44,107 @@ export class IdeaService {
     }
   }
 
-  async updateIdea(ideaID: string, updates: Partial<{ name: string; content: string }>) {
-    return await prisma.idea.update({
+  async updateIdea(
+    ideaID: string, 
+    updates: Partial<{
+      name: string;
+      content: string; // edit to include categories and tags if needed
+    }>) {
+    await prisma.idea.update({
       where: { ideaID },
-      data: updates,
+      data: {
+        name: updates.name,
+        content: updates.content,
+      },
     });
   }
 
-  async getAllIdeas() {
-    return await prisma.idea.findMany();
+  async getAllIdeasWithImages() {
+    const ideas = await prisma.idea.findMany({
+      include: {
+        image: true, // fetch the imageIDs related to each idea
+      },
+    });
+  
+    const results = [];
+  
+    for (const idea of ideas) {
+      let images: ({ base64: string; format: string; } | null)[] = [];
+  
+      if (idea.image && idea.image.length > 0) {
+        // You can fetch image data one by one using imageService
+        const imageFetches = await Promise.all(
+          idea.image.map(async (img) => {
+            try {
+              return await this.imageService.getImageOnly(img.imageID);
+            } catch {
+              return null;
+            }
+          })
+        );
+        images = imageFetches.filter(Boolean); // remove any nulls
+      }
+  
+      results.push({
+        ...idea,
+        images,
+      });
+    }
+  
+    return results;
+  }
+
+  async getIdeaWithSketch(ideaID: string) {
+    const idea = await prisma.idea.findUnique({
+      where: { ideaID },
+      include: {
+        image: true,
+      },
+    });
+
+    if (!idea) {
+      throw new Error('Idea not found');
+    }
+
+    let images: ({ paths: CanvasPath[]; base64: string; format: string; } | null)[] = [];
+
+    if (idea.image && idea.image.length > 0) {
+      // You can fetch image data one by one using imageService
+      const imageFetches = await Promise.all(
+        idea.image.map(async (img) => {
+          try {
+            return await this.imageService.getImageWithPaths(img.imageID);
+          } catch {
+            return null;
+          }
+        })
+      );
+      images = imageFetches.filter(Boolean); // remove any nulls
+    }
+
+    return {
+      ...idea,
+      images,
+    };
+  }
+
+  async deleteIdea(ideaID: string) {
+    await prisma.idea.delete({
+      where: { ideaID },
+    });
+
+    const images = await prisma.image.findMany({
+      where: { ideaID },
+    });
+  
+    await Promise.all(
+      images.map(async (img) => {
+        try {
+          await this.imageService.deleteSketch(img.imageID);
+        } catch (err) {
+          console.error(`Failed to delete image ${img.imageID}:`, err);
+        }
+      })
+    );
   }
 }

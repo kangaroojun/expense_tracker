@@ -70,4 +70,35 @@ export class AccountService {
 
     return { token };
   }
+
+  async getAllAccounts() {
+    const accounts = await prisma.account.findMany({
+      select: {
+        accountID: true,
+        email: true,
+        role: true,
+      },
+    });
+
+    return accounts;
+  }
+
+  async getAllUsers() {
+    const users = await prisma.user.findMany({
+      include: {
+        account: {
+          select: {
+            email: true,
+            role: true,
+          }
+        }
+      }
+    });
+
+    return users.map(user => ({
+      userID: user.userID,
+      email: user.account.email,
+      role: user.account.role,
+    }));
+  }
 }
