@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
-import Login from "./pages/Login.js";
+import Login from "./pages/Login";
 import Idea from "./pages/Idea";
 import "bootstrap/dist/css/bootstrap.min.css";
 import UserContext from "./UserContext";
@@ -18,8 +18,8 @@ function App() {
       <Router>
         <div>
           <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/home" element={<Home />} />
+            <Route path="/home" element={<Login />} />
+            <Route path="/" element={<Home />} />
             <Route path="/idea" element={<Idea />} />
           </Routes>
         </div>

@@ -41,7 +41,6 @@ function LoginForm() {
       if (response.ok) {
         setUser(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
-
         console.log("Login successful:", data.user);
       } else {
         console.error("Login failed:", data.message);
