@@ -39,9 +39,14 @@ function LoginForm() {
       const data = await response.json();
 
       if (response.ok) {
-        setUser(data.user);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        console.log("Login successful:", data.user);
+        const userData = {
+          ...data.user,
+          token: data.token,
+        };
+
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+        console.log("Login successful:", userData);
       } else {
         console.error("Login failed:", data.message);
         alert(data.message || "Invalid email or password.");

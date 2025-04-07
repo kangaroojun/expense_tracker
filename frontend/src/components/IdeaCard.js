@@ -11,6 +11,21 @@ const IdeaCard = ({ idea, onDelete, onRename }) => {
     setIsEditing(false);
   };
 
+  const getCategoryClass = (category) => {
+    switch (category) {
+      case "Tech":
+        return "category-tech";
+      case "Sports":
+        return "category-sports";
+      case "Health":
+        return "category-health";
+      case "Finance":
+        return "category-finance";
+      default:
+        return "category-default";
+    }
+  };
+
   return (
     <div className="idea-card">
       {isEditing ? (
@@ -27,7 +42,9 @@ const IdeaCard = ({ idea, onDelete, onRename }) => {
       ) : (
         <>
           <h3>{idea.title}</h3>
-          <p className="category">{idea.category}</p>
+          <p className={`category ${getCategoryClass(idea.category)}`}>
+            {idea.category}
+          </p>
         </>
       )}
       <div className="icons">

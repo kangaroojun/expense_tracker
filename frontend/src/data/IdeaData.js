@@ -1,7 +1,19 @@
-const ideaData = [
-  { id: 1, title: "Banana-powered car", category: "Energy" },
-  { id: 2, title: "Smart socks", category: "Wearables" },
-  { id: 3, title: "Teleporting coffee", category: "Futuristic" },
-];
+export const fetchIdeas = async (token) => {
+  try {
+    const response = await fetch("http://localhost:3000/idea", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-export default ideaData;
+    if (!response.ok) {
+      throw new Error("Failed to fetch ideas");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching ideas:", error);
+    return [];
+  }
+};
