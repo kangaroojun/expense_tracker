@@ -48,13 +48,22 @@ export class IdeaService {
     ideaID: string, 
     updates: Partial<{
       name: string;
-      content: string; // edit to include categories and tags if needed
+      content: string;
+      categories: string[];
+      tags: string[];
     }>) {
     await prisma.idea.update({
       where: { ideaID },
       data: {
         name: updates.name,
         content: updates.content,
+        categories: {
+          connectOrCreate: updates.categories?.map(desc => ({
+            where: { description: desc },
+            create: { description: desc },
+          })) || [],
+        },
+        tags: updates.tags?.map(tag => tag as Tag) || [],
       },
     });
   }
@@ -72,7 +81,6 @@ export class IdeaService {
       let images: ({ base64: string; format: string; } | null)[] = [];
   
       if (idea.image && idea.image.length > 0) {
-        // You can fetch image data one by one using imageService
         const imageFetches = await Promise.all(
           idea.image.map(async (img) => {
             try {
