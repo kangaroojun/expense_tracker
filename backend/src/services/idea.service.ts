@@ -4,7 +4,7 @@ import { ImageService } from './image.service';
 const prisma = new PrismaClient();
 
 export class IdeaService {
-  private imageService = new ImageService();
+  constructor(private imageService = new ImageService()) {}
 
   async createIdea(data: {
     userID: string;
@@ -42,6 +42,11 @@ export class IdeaService {
       };
       image = await this.imageService.createSketch(imageData);
     }
+
+    return {
+      ...newIdea,
+      image,
+    };
   }
 
   async updateIdea(
@@ -52,7 +57,7 @@ export class IdeaService {
       categories: string[];
       tags: string[];
     }>) {
-    await prisma.idea.update({
+    const updatedIdea = await prisma.idea.update({
       where: { ideaID },
       data: {
         name: updates.name,
@@ -66,6 +71,10 @@ export class IdeaService {
         tags: updates.tags?.map(tag => tag as Tag) || [],
       },
     });
+
+    return {
+      ...updatedIdea
+    };
   }
 
   async getAllIdeasWithImages() {

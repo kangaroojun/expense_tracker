@@ -1,26 +1,52 @@
 // middleware/auth.middleware.ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'your_dev_secret';
 
 export interface AuthenticatedRequest extends Request {
-  user?: any; // you can define a stricter type later
+  user?: {
+    accountID: string;
+    userID: string;
+    role: string;
+  };
 }
 
-export function authenticateToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+export async function authenticateToken(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   const authHeader = req.headers['authorization'];
-
-  const token = authHeader && authHeader.split(' ')[1]; // Expecting: Bearer <token>
+  const token = authHeader?.split(' ')[1]; // Expecting: Bearer <token>
 
   if (!token) {
-    return res.status(401).json({ error: 'Missing token' });
+    res.status(401).json({ error: 'Missing token' });
+    return;
   }
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: 'Invalid or expired token' });
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as { accountID: string; role: string };
 
-    req.user = user; // user = { accountID, role, ... }
+    const user = await prisma.user.findUnique({
+      where: { accountID: decoded.accountID },
+    });
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found for accountID' });
+      return;
+    }
+
+    req.user = {
+      accountID: decoded.accountID,
+      userID: user.userID,
+      role: decoded.role,
+    };
+
     next();
-  });
+  } catch (err) {
+    res.status(403).json({ error: 'Invalid or expired token' });
+  }
 }

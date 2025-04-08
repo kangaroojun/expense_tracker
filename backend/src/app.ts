@@ -4,6 +4,7 @@ import cors from 'cors';
 import accountRoutes from './routes/account.route';
 import ideaRoutes from './routes/idea.route';
 import imageRoutes from './routes/image.route';
+import { authenticateToken } from './middlewares/auth.middleware';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,7 +18,7 @@ app.use(express.json());
 app.use('/account', accountRoutes);
 
 // Register idea-related routes
-app.use('/idea', ideaRoutes);
+app.use('/idea', authenticateToken, ideaRoutes);
 
 // Register image-related routes
 app.use('/image', imageRoutes);
