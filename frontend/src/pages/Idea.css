@@ -1,0 +1,43 @@
+.idea-page {
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  .idea-page input[type="text"] {
+    margin: 0.5rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    width: 200px;
+  }
+  
+  .idea-page .input-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .idea-page input[type="color"] {
+    margin: 0.5rem;
+    width: 50px;
+    height: 40px;
+    border: none;
+  }
+  
+  .drawing-canvas {
+    border: 2px solid #ccc;
+    margin: 1rem auto;
+    display: block;
+    background-color: #fff;
+  }
+  
+  .save-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    background-color: #5c67f2;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  

@@ -4,7 +4,7 @@ import "./IdeaCard.css";
 
 const IdeaCard = ({ idea, onDelete, onRename }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [newTitle, setNewTitle] = useState(idea.title);
+  const [newTitle, setNewTitle] = useState(idea.name);
 
   const handleRename = () => {
     onRename(idea.id, newTitle);
@@ -42,8 +42,10 @@ const IdeaCard = ({ idea, onDelete, onRename }) => {
       ) : (
         <>
           <h3>{idea.name}</h3>
-          <p className={`category ${getCategoryClass(idea.categories[1]?.description)}`}>
-            {idea.categories[0]?.description}
+          {/* <p className={`category ${getCategoryClass(idea.categories[1]?.description)}`}> */}
+          <p className={`category ${getCategoryClass(idea.category)}`}>
+            {/* {idea.categories[0]?.description} */}
+            {idea.category}
           </p>
         </>
       )}
