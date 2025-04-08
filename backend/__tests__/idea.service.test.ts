@@ -233,6 +233,12 @@ describe('IdeaService', () => {
         format: 'jpeg',
       },
     ]);
+  });
+
+  it('should throw an error if idea is not found', async () => {
+    prismaMock.idea.findUnique.mockResolvedValue(null);
+  
+    await expect(ideaService.getIdeaWithSketch('nonexistent')).rejects.toThrow('Idea not found');
   });  
   
 });

@@ -7,8 +7,10 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'your_dev_secret';
 
 export class AccountService {
+  constructor(private prisma = new PrismaClient()) {}
+
   async register(email: string, plainPassword: string) {
-    const existingUser = await prisma.account.findFirst({
+    const existingUser = await this.prisma.account.findFirst({
       where: { email },
     });
 
@@ -18,7 +20,7 @@ export class AccountService {
 
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-    const account = await prisma.account.create({
+    const account = await this.prisma.account.create({
       data: {
         email,
         password: hashedPassword,
@@ -26,7 +28,7 @@ export class AccountService {
       }
     });
 
-    const user = await prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         accountID: account.accountID
       }
@@ -45,7 +47,7 @@ export class AccountService {
   }
 
   async login(email: string, plainPassword: string) {
-    const account = await prisma.account.findUnique({
+    const account = await this.prisma.account.findUnique({
       where: { email },
     });
 
@@ -72,7 +74,7 @@ export class AccountService {
   }
 
   async getAllAccounts() {
-    const accounts = await prisma.account.findMany({
+    const accounts = await this.prisma.account.findMany({
       select: {
         accountID: true,
         email: true,
@@ -84,7 +86,7 @@ export class AccountService {
   }
 
   async getAllUsers() {
-    const users = await prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       include: {
         account: {
           select: {
