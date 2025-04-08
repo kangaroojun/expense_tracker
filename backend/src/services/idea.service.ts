@@ -56,6 +56,10 @@ export class IdeaService {
       content: string;
       categories: string[];
       tags: string[];
+      imageID: string;
+      paths: CanvasPath[];
+      sketchBase64: string;
+      sketchFormat: string;
     }>) {
     const updatedIdea = await prisma.idea.update({
       where: { ideaID },
@@ -71,6 +75,17 @@ export class IdeaService {
         tags: updates.tags?.map(tag => tag as Tag) || [],
       },
     });
+
+    let image = null;
+
+    if (updates.imageID && updates.paths && updates.sketchBase64 && updates.sketchFormat) {
+      let imageData = {
+        paths: updates.paths,
+        base64: updates.sketchBase64,
+        format: updates.sketchFormat,
+      };
+      image = await this.imageService.updateSketch(updates.imageID, imageData);
+    }
 
     return {
       ...updatedIdea
@@ -147,10 +162,6 @@ export class IdeaService {
   }
 
   async deleteIdea(ideaID: string) {
-    await prisma.idea.delete({
-      where: { ideaID },
-    });
-
     const images = await prisma.image.findMany({
       where: { ideaID },
     });
@@ -164,5 +175,13 @@ export class IdeaService {
         }
       })
     );
+
+    await prisma.idea.delete({
+      where: { ideaID },
+    });
+
+    return {
+      message: 'Idea deleted successfully',
+    };
   }
 }
