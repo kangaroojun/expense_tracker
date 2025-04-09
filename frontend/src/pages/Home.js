@@ -3,14 +3,14 @@ import UserContext from "../UserContext";
 import IdeaCard from "../components/IdeaCard";
 import "./Home.css";
 import { fetchIdeas } from "../data/IdeaData";
-import ideaData from "../data/IdeaData";
+// import ideaData from "../data/IdeaData";
 import { FaPlusCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 function Home() {
   const { user } = useContext(UserContext);
-  // const [ideas, setIdeas] = useState([]);
-  const [ideas, setIdeas] = useState(ideaData);
+  const [ideas, setIdeas] = useState([]);
+  // const [ideas, setIdeas] = useState(ideaData);
   const navigate = useNavigate();
 
   const handleDelete = (id) => {
@@ -23,16 +23,16 @@ function Home() {
     );
   };
 
-  // useEffect(() => {
-  //   const loadIdeas = async () => {
-  //     if (user?.token) {
-  //       const data = await fetchIdeas(user.token);
-  //       setIdeas(data);
-  //     }
-  //   };
+  useEffect(() => {
+    const loadIdeas = async () => {
+      if (user?.token) {
+        const data = await fetchIdeas(user.token);
+        setIdeas(data);
+      }
+    };
 
-  //   loadIdeas();
-  // }, [user]);
+    loadIdeas();
+  }, [user]);
 
   const categories = [...new Set(ideas.map((idea) => idea.category))];
 
