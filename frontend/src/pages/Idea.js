@@ -1,51 +1,28 @@
 import React, { useRef, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { ReactSketchCanvas } from "react-sketch-canvas";
 import UserContext from "../UserContext";
 import "./Idea.css";
 
 function Idea() {
   const canvasRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
   const [ideaName, setIdeaName] = useState("");
   const [category, setCategory] = useState("");
   const [color, setColor] = useState("#000000");
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const startDrawing = (e) => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-    setIsDrawing(true);
-  };
-
-  const draw = (e) => {
-    if (!isDrawing) return;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-    ctx.stroke();
-  };
-
-  const stopDrawing = () => {
-    setIsDrawing(false);
-  };
-
   const handleSave = async () => {
-    const canvas = canvasRef.current;
-    const drawing = canvas.toDataURL();
-
-    const newIdea = {
-      name: ideaName,
-      category: category,
-      image: drawing,
-    };
-
     try {
-      const response = await fetch("http://localhost:3000/idea/create", {
+      const drawing = await canvasRef.current.exportImage("png");
+
+      const newIdea = {
+        name: ideaName,
+        category: category,
+        image: drawing,
+      };
+
+      const response = await fetch("http://localhost:5000/api/ideas", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -86,16 +63,19 @@ function Idea() {
           onChange={(e) => setColor(e.target.value)}
         />
       </div>
-      <canvas
-        ref={canvasRef}
-        width={500}
-        height={300}
-        className="drawing-canvas"
-        onMouseDown={startDrawing}
-        onMouseMove={draw}
-        onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
-      />
+      <div className="canvas-wrapper">
+        <ReactSketchCanvas
+          ref={canvasRef}
+          strokeWidth={4}
+          strokeColor={color}
+          style={{
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            width: "100%",
+            height: "300px",
+          }}
+        />
+      </div>
       <button className="save-btn" onClick={handleSave}>
         Save
       </button>
