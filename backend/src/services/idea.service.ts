@@ -1,6 +1,7 @@
 // services/idea.service.ts
 import { PrismaClient, Tag } from '@prisma/client';
 import { ImageService } from './image.service';
+import type { CanvasPath } from 'react-sketch-canvas';
 const prisma = new PrismaClient();
 
 export class IdeaService {

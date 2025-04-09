@@ -1,6 +1,5 @@
 import prismaMock from '../__mocks__/prismaClient';
 import { IdeaService } from '../src/services/idea.service';
-// import { PrismaClient } from '@prisma/client';
 import { ImageService } from '../src/services/image.service';
 
 // Mock dependencies

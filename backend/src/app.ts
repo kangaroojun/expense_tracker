@@ -4,7 +4,7 @@ import cors from 'cors';
 import accountRoutes from './routes/account.route';
 import ideaRoutes from './routes/idea.route';
 import imageRoutes from './routes/image.route';
-import { authenticateToken } from './middlewares/auth.middleware';
+import { authenticateToken } from './middleware/auth.middleware';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
