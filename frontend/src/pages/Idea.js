@@ -22,7 +22,7 @@ function Idea() {
         image: drawing,
       };
 
-      const response = await fetch("http://localhost:5000/api/ideas", {
+      const response = await fetch("http://localhost:3000/idea/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
