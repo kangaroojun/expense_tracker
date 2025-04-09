@@ -12,7 +12,7 @@ export class IdeaService {
     name: string;
     content: string;
     categories: string[]; // array of categories
-    tags: string[];       // enums as strings
+    tags?: string[];       // enums as strings
     paths?: CanvasPath[]; // optional, for sketch
     sketchBase64?: string;
     sketchFormat?: string;
@@ -28,15 +28,15 @@ export class IdeaService {
             create: { description: desc },
           }))
         },
-        tags: data.tags.map(tag => tag as Tag),
+        // tags: data.tags.map(tag => tag as Tag),
       },
     });
 
     let image = null;
 
-    if (data.paths && data.sketchBase64 && data.sketchFormat) {
+    if (data.sketchBase64 && data.sketchFormat) {
       let imageData = {
-        paths: data.paths,
+        // paths: data.paths,
         base64: data.sketchBase64,
         format: data.sketchFormat,
         ideaID: newIdea.ideaID,

@@ -5,13 +5,13 @@ const prisma = new PrismaClient();
 
 export class ImageService {
   async createSketch(data: {
-    paths: CanvasPath[];
+    // paths: CanvasPath[];
     base64: string;
     format: string;
     ideaID: string;
   }) {
     const imageData = {
-      paths: data.paths,
+      // paths: data.paths,
       base64: data.base64,
     };
     

@@ -40,9 +40,10 @@ function Idea() {
 
     const newIdea = {
       name: ideaName,
-      category: category,
+      categories: [category],
       sketchBase64: drawing,
       content: "This is a TEST",
+      sketchFormat: "png",
     };
 
     try {
@@ -56,7 +57,7 @@ function Idea() {
       });
 
       if (response.ok) {
-        navigate("/");
+        navigate("/home");
       } else {
         console.error("Failed to save idea");
       }
