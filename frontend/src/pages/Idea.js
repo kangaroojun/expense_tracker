@@ -2,6 +2,7 @@ import React, { useRef, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../UserContext";
 import "./Idea.css";
+import { updateIdeas } from "../data/IdeaData";
 
 function Idea() {
   const canvasRef = useRef(null);
@@ -34,36 +35,71 @@ function Idea() {
     setIsDrawing(false);
   };
 
-  const handleSave = async () => {
+  // const handleSave = async () => {
+  //   const canvas = canvasRef.current;
+  //   const drawing = canvas.toDataURL();
+
+  //   const newIdea = {
+  //     name: ideaName,
+  //     categories: [category],
+  //     sketchBase64: drawing,
+  //     content: "This is a TEST",
+  //     sketchFormat: "png",
+  //   };
+
+  //   try {
+  //     const response = await fetch("http://localhost:3000/idea/create", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${user.token}`,
+  //       },
+  //       body: JSON.stringify(newIdea),
+  //     });
+
+  //     if (response.ok) {
+  //       navigate("/");
+  //     } else {
+  //       console.error("Failed to save idea");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error saving idea:", err);
+  //   }
+  // };
+
+  const handleSave = () => {
     const canvas = canvasRef.current;
     const drawing = canvas.toDataURL();
 
     const newIdea = {
+      ideaID: "IDEA_ID",
+      userID: "USER_ID",
       name: ideaName,
-      categories: [category],
-      sketchBase64: drawing,
       content: "This is a TEST",
-      sketchFormat: "png",
+      creationDate: "2025-04-09T02:45:52.660Z",
+      modificationDate: "2025-04-09T02:45:52.660Z",
+      tags: [],
+      categories: [
+        {
+          categoryID: "CATEGORY_ID",
+          description: category,
+        },
+      ],
+      image: [
+        {
+          imageID: "2",
+          ideaID: "1",
+          data: {
+            base64: drawing,
+          },
+        },
+      ],
     };
 
-    try {
-      const response = await fetch("http://localhost:3000/idea/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-        body: JSON.stringify(newIdea),
-      });
+    console.log("New Idea: ", newIdea);
 
-      if (response.ok) {
-        navigate("/home");
-      } else {
-        console.error("Failed to save idea");
-      }
-    } catch (err) {
-      console.error("Error saving idea:", err);
-    }
+    updateIdeas(newIdea);
+    navigate("/");
   };
 
   return (

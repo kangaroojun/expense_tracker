@@ -28,6 +28,14 @@ const IdeaCard = ({ idea, onDelete, onRename }) => {
 
   return (
     <div className="idea-card">
+      {idea.image && idea.image.length > 0 && (
+        <img
+          src={idea.image[0].data.base64}
+          alt={idea.name}
+          className="idea-image"
+        />
+      )}
+
       {isEditing ? (
         <>
           <input
@@ -42,13 +50,20 @@ const IdeaCard = ({ idea, onDelete, onRename }) => {
       ) : (
         <>
           <h3>{idea.name}</h3>
-          <p className={`category ${getCategoryClass(idea.categories[1]?.description)}`}>
-          {/* <p className={`category ${getCategoryClass(idea.category)}`}> */}
-            {idea.categories[0]?.description}
-            {idea.category}
-          </p>
+
+          <div className="categories">
+            {idea.categories.map((cat, index) => (
+              <span
+                key={index}
+                className={`${getCategoryClass(cat.description)}`}
+              >
+                {cat.description}
+              </span>
+            ))}
+          </div>
         </>
       )}
+
       <div className="icons">
         <FaEdit onClick={() => setIsEditing(!isEditing)} />
         <FaTrash onClick={() => onDelete(idea.id)} />
