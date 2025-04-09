@@ -1,10 +1,11 @@
 // services/idea.service.ts
 import { PrismaClient, Tag } from '@prisma/client';
 import { ImageService } from './image.service';
+import type { CanvasPath } from 'react-sketch-canvas';
 const prisma = new PrismaClient();
 
 export class IdeaService {
-  private imageService = new ImageService();
+  constructor(private imageService = new ImageService()) {}
 
   async createIdea(data: {
     userID: string;
@@ -42,6 +43,11 @@ export class IdeaService {
       };
       image = await this.imageService.createSketch(imageData);
     }
+
+    return {
+      ...newIdea,
+      image,
+    };
   }
 
   async updateIdea(
@@ -51,8 +57,12 @@ export class IdeaService {
       content: string;
       categories: string[];
       tags: string[];
+      imageID: string;
+      paths: CanvasPath[];
+      sketchBase64: string;
+      sketchFormat: string;
     }>) {
-    await prisma.idea.update({
+    const updatedIdea = await prisma.idea.update({
       where: { ideaID },
       data: {
         name: updates.name,
@@ -66,6 +76,21 @@ export class IdeaService {
         tags: updates.tags?.map(tag => tag as Tag) || [],
       },
     });
+
+    let image = null;
+
+    if (updates.imageID && updates.paths && updates.sketchBase64 && updates.sketchFormat) {
+      let imageData = {
+        paths: updates.paths,
+        base64: updates.sketchBase64,
+        format: updates.sketchFormat,
+      };
+      image = await this.imageService.updateSketch(updates.imageID, imageData);
+    }
+
+    return {
+      ...updatedIdea
+    };
   }
 
   async getAllIdeasWithImages() {
@@ -138,10 +163,6 @@ export class IdeaService {
   }
 
   async deleteIdea(ideaID: string) {
-    await prisma.idea.delete({
-      where: { ideaID },
-    });
-
     const images = await prisma.image.findMany({
       where: { ideaID },
     });
@@ -155,5 +176,13 @@ export class IdeaService {
         }
       })
     );
+
+    await prisma.idea.delete({
+      where: { ideaID },
+    });
+
+    return {
+      message: 'Idea deleted successfully',
+    };
   }
 }
