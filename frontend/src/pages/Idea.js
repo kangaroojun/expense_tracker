@@ -39,10 +39,10 @@ function Idea() {
     const drawing = canvas.toDataURL();
 
     const newIdea = {
-      title: ideaName,
+      name: ideaName,
       category: category,
       image: drawing,
-      userId: user?.id,
+      ideaId: user?.id,
     };
 
     try {
