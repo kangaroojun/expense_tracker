@@ -43,11 +43,22 @@ const ideaData = [
         },
       },
     ],
+    path: [],
   },
 ];
 
 export default ideaData;
 
 export const updateIdeas = (newIdea) => {
-  ideaData.push(newIdea);
+  const index = ideaData.findIndex((idea) => idea.ideaID === newIdea.ideaID);
+
+  if (index !== -1) {
+    ideaData[index] = newIdea;
+  } else {
+    ideaData.push(newIdea);
+  }
+};
+
+export const getIdeaByID = (ideaID) => {
+  return ideaData.find((idea) => idea.ideaID === ideaID);
 };

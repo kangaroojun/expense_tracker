@@ -30,6 +30,7 @@ function App() {
             <Route path="/home" element={<Login />} />
             <Route path="/" element={<Home />} />
             <Route path="/idea" element={<Idea />} />
+            <Route path="/idea/:id" element={<Idea />} />
           </Routes>
         </div>
       </Router>

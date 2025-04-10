@@ -13,13 +13,16 @@ function Home() {
   const [ideas, setIdeas] = useState(ideaData);
   const navigate = useNavigate();
 
-  const handleDelete = (id) => {
-    setIdeas(ideas.filter((idea) => idea.id !== id));
+  const handleDelete = (ideaID) => {
+    const updatedIdeas = ideas.filter((idea) => idea.ideaID !== ideaID);
+    setIdeas(updatedIdeas);
   };
 
   const handleRename = (id, newTitle) => {
     setIdeas(
-      ideas.map((idea) => (idea.id === id ? { ...idea, name: newTitle } : idea))
+      ideas.map((idea) =>
+        idea.ideaID === id ? { ...idea, name: newTitle } : idea
+      )
     );
   };
 
@@ -50,7 +53,7 @@ function Home() {
     <div className="home-container">
       <div className="home-header">
         <h1>💡 Shitty Ideas Dump</h1>
-        <button className="create-btn" onClick={() => navigate("/idea")}>
+        <button className="create-btn" onClick={() => navigate("/idea/1")}>
           <FaPlusCircle className="plus-icon" /> New Idea
         </button>
       </div>

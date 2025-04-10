@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import "./IdeaCard.css";
+import { useNavigate } from "react-router-dom";
 
 const IdeaCard = ({ idea, onDelete, onRename }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(idea.name);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/idea/${idea.ideaID}`);
+  };
 
   const handleRename = () => {
     onRename(idea.id, newTitle);
@@ -13,13 +19,13 @@ const IdeaCard = ({ idea, onDelete, onRename }) => {
 
   const getCategoryClass = (category) => {
     switch (category) {
-      case "Tech":
+      case "tech":
         return "category-tech";
-      case "Sports":
+      case "sports":
         return "category-sports";
-      case "Health":
+      case "health":
         return "category-health";
-      case "Finance":
+      case "finance":
         return "category-finance";
       default:
         return "category-default";
@@ -27,7 +33,7 @@ const IdeaCard = ({ idea, onDelete, onRename }) => {
   };
 
   return (
-    <div className="idea-card">
+    <div className="idea-card" onClick={handleClick}>
       {idea.image && idea.image.length > 0 && (
         <img
           src={idea.image[0].data.base64}
@@ -55,7 +61,7 @@ const IdeaCard = ({ idea, onDelete, onRename }) => {
             {idea.categories.map((cat, index) => (
               <span
                 key={index}
-                className={`${getCategoryClass(cat.description)}`}
+                className={`${getCategoryClass(cat.description.toLowerCase())}`}
               >
                 {cat.description}
               </span>
@@ -65,8 +71,18 @@ const IdeaCard = ({ idea, onDelete, onRename }) => {
       )}
 
       <div className="icons">
-        <FaEdit onClick={() => setIsEditing(!isEditing)} />
-        <FaTrash onClick={() => onDelete(idea.id)} />
+        <FaEdit
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsEditing(!isEditing);
+          }}
+        />
+        <FaTrash
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(idea.ideaID);
+          }}
+        />
       </div>
     </div>
   );
