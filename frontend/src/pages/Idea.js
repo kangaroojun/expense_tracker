@@ -28,16 +28,24 @@ function Idea() {
         setIdeaName(existingIdea.name);
         setCategory(existingIdea.categories?.[0]?.description || "");
 
-        const formattedPaths =
-          existingIdea.paths?.map((path) => ({
-            color: path.color || "#000000",
-            path: path.path || [],
-          })) || [];
+        const formattedPaths = existingIdea.paths?.map((path) => ({
+          color: path.isErasing ? null : (path.color ?? "#000000"),
+          path: path.path ?? [],
+          isErasing: !!path.isErasing,
+        })) || [];
 
         setPaths(formattedPaths);
 
         formattedPaths.forEach((pathObj) => {
-          ctx.strokeStyle = pathObj.color;
+          if (pathObj.isErasing) {
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.lineWidth = 10;
+          } else {
+            ctx.globalCompositeOperation = "source-over";
+            ctx.strokeStyle = pathObj.color;
+            ctx.lineWidth = 2;
+          }
+        
           ctx.beginPath();
           pathObj.path.forEach((point, index) => {
             if (index === 0) {
@@ -48,6 +56,7 @@ function Idea() {
           });
           ctx.stroke();
         });
+        
       }
     }
   }, [ideaID]);
@@ -96,17 +105,19 @@ function Idea() {
   const stopDrawing = () => {
     if (!isDrawing) return;
     setIsDrawing(false);
-
+  
     setPaths((prev) => [
       ...prev,
       {
-        color: color,
+        color: isErasing ? null : color,
         path: currentPath,
+        isErasing: isErasing,            // track eraser mode
       },
     ]);
-
+  
     setCurrentPath([]);
   };
+  
 
   const handleSave = () => {
     const newIdea = {
