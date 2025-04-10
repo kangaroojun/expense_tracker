@@ -26,7 +26,6 @@ describe('IdeaService', () => {
       deleteSketch: jest.fn(),
     } as unknown as jest.Mocked<ImageService>;
 
-    // Inject the mocked service
     ideaService = new IdeaService(imageServiceMock);
   });
 
