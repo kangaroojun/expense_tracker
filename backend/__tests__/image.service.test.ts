@@ -1,5 +1,4 @@
 // __tests__/image.service.test.ts
-import { ImageService } from '../src/services/image.service';
 import { CanvasPath } from 'react-sketch-canvas';
 import prismaMock from '../__mocks__/prismaClient';
 
@@ -10,6 +9,8 @@ jest.mock('@prisma/client', () => {
     PrismaClient: jest.fn(() => prismaMock),
   };
 });
+
+import { ImageService } from '../src/services/image.service';
 
 describe('ImageService', () => {
   const imageService = new ImageService();
