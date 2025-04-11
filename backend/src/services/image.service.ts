@@ -59,6 +59,7 @@ export class ImageService {
     // console.log(imageData.paths);
     
     return {
+      imageID: image.imageID,
       paths: imageData.paths,
       base64: imageData.base64,
       format: image.format,

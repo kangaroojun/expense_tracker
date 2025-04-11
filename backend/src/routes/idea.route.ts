@@ -46,10 +46,9 @@ router.post('/create', async (req: AuthenticatedRequest, res) => {
 
 router.patch('/:ideaID', async (req, res) => {
     const { ideaID } = req.params;
-    const { name, content } = req.body;
 
     try {
-        await ideaService.updateIdea(ideaID, { name, content });
+        await ideaService.updateIdea(ideaID, req.body);
         res.status(200).json({ message: 'Idea updated successfully' });
     } catch (err: any) {
         res.status(400).json({ error: err.message });
