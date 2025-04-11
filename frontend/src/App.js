@@ -27,8 +27,8 @@ function App() {
       <Router>
         <div>
           <Routes>
-            <Route path="/home" element={<Login />} />
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/idea" element={<Idea />} />
             <Route path="/idea/:id" element={<Idea />} />
           </Routes>

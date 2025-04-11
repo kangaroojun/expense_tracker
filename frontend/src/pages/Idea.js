@@ -18,24 +18,51 @@ function Idea() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height); //fresh canvas
-
-    if (ideaID) {
-      const existingIdea = getIdeaByID(ideaID);
-      if (existingIdea) {
+    const loadIdea = async () => {
+      // Ensure both ideaID and valid user token are available.
+      if (!user?.token) {
+        console.error("Missing user token");
+        return;
+      }
+  
+      try {
+        const response = await fetch(`http://localhost:3000/idea/${ideaID}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
+  
+        if (!response.ok) {
+          console.error("Failed to fetch idea");
+          return;
+        }
+  
+        const existingIdea = await response.json();
+        console.log("Fetched idea:", existingIdea.image[0].data);
+  
+        // Use the fetched idea data to update state.
         setIdeaName(existingIdea.name);
+        // Assumes that categories is an array; adjust if your data structure differs
         setCategory(existingIdea.categories?.[0]?.description || "");
-
-        const formattedPaths = existingIdea.paths?.map((path) => ({
-          color: path.isErasing ? null : (path.color ?? "#000000"),
-          path: path.path ?? [],
-          isErasing: !!path.isErasing,
-        })) || [];
-
+  
+        // Safely handle paths.
+        const formattedPaths = Array.isArray(existingIdea.image[0].data.paths)
+          ? existingIdea.image[0].data.paths.map((p) => ({
+              color: p.isErasing ? null : p.color || "#000000",
+              // p.path is already an array per your log
+              path: p.path || [],
+              isErasing: !!p.isErasing,
+            }))
+          : [];
+  
         setPaths(formattedPaths);
-
+  
+        // Drawing paths on canvas:
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
+  
         formattedPaths.forEach((pathObj) => {
           if (pathObj.isErasing) {
             ctx.globalCompositeOperation = "destination-out";
@@ -45,7 +72,7 @@ function Idea() {
             ctx.strokeStyle = pathObj.color;
             ctx.lineWidth = 2;
           }
-        
+  
           ctx.beginPath();
           pathObj.path.forEach((point, index) => {
             if (index === 0) {
@@ -56,10 +83,13 @@ function Idea() {
           });
           ctx.stroke();
         });
-        
+      } catch (error) {
+        console.error("Error fetching idea:", error);
       }
-    }
-  }, [ideaID]);
+    };
+  
+    loadIdea();
+  }, [ideaID, user]);  
 
   const startDrawing = (e) => {
     const { offsetX, offsetY } = e.nativeEvent;
@@ -118,8 +148,7 @@ function Idea() {
     setCurrentPath([]);
   };
   
-
-  const handleSave = () => {
+  const handleSave = async () => {
     const newIdea = {
       ideaID: ideaID || Date.now().toString(),
       userID: user?.id || "default_user",
@@ -127,27 +156,66 @@ function Idea() {
       content: "Canvas drawing",
       creationDate: new Date().toISOString(),
       tags: [],
-      categories: [
-        {
-          categoryID: "CATEGORY_ID",
-          description: category,
-        },
-      ],
-      image: [
-        {
-          imageID: "IMAGE_ID",
-          ideaID: ideaID || Date.now().toString(),
-          data: {
-            base64: canvasRef.current.toDataURL("image/png"),
-          },
-        },
-      ],
+      categories: [category],
       paths: paths,
+      sketchBase64: canvasRef.current.toDataURL("image/png"),
+      sketchFormat: "png",
+
+      // categories: [
+      //   {
+      //     description: [category],
+      //   },
+      // ],
+      // image: [
+      //   {
+      //     ideaID: ideaID || Date.now().toString(),
+      //     data: {
+      //       base64: canvasRef.current.toDataURL("image/png"),
+      //     },
+      //   },
+      // ],
+      // paths: paths,
     };
 
+    try {
+      if (ideaID) { // Update existing idea
+        const response = await fetch(`http://localhost:3000/idea/${ideaID}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+          body: JSON.stringify(newIdea),
+        });
+  
+        if (response.ok) {
+          navigate("/home");
+        } else {
+          console.error("Failed to update idea");
+        }
+      } else { // Create new idea
+        const response = await fetch("http://localhost:3000/idea/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+          body: JSON.stringify(newIdea),
+        });
+    
+        if (response.ok) {
+          navigate("/home");
+        } else {
+          console.error("Failed to save idea");
+        }
+      }} 
+    catch (err) {
+      console.error("Error saving idea:", err);
+    }
+
     console.log("Saving Idea: ", newIdea);
-    updateIdeas(newIdea);
-    navigate("/");
+    // updateIdeas(newIdea);
+    // navigate("/");
   };
 
   return (
@@ -197,35 +265,3 @@ function Idea() {
 }
 
 export default Idea;
-
-// const handleSave = async () => {
-//   const canvas = canvasRef.current;
-//   const drawing = canvas.toDataURL();
-
-//   const newIdea = {
-//     name: ideaName,
-//     categories: [category],
-//     sketchBase64: drawing,
-//     content: "This is a TEST",
-//     sketchFormat: "png",
-//   };
-
-//   try {
-//     const response = await fetch("http://localhost:3000/idea/create", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${user.token}`,
-//       },
-//       body: JSON.stringify(newIdea),
-//     });
-
-//     if (response.ok) {
-//       navigate("/");
-//     } else {
-//       console.error("Failed to save idea");
-//     }
-//   } catch (err) {
-//     console.error("Error saving idea:", err);
-//   }
-// };

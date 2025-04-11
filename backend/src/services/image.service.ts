@@ -55,6 +55,8 @@ export class ImageService {
     }
 
     const imageData = image.data as any;
+
+    // console.log(imageData.paths);
     
     return {
       paths: imageData.paths,

@@ -132,6 +132,7 @@ export class IdeaService {
     const idea = await prisma.idea.findUnique({
       where: { ideaID },
       include: {
+        categories: true,
         image: true,
       },
     });
@@ -155,6 +156,8 @@ export class IdeaService {
       );
       images = imageFetches.filter(Boolean); // remove any nulls
     }
+
+    console.log(images[0]);
 
     return {
       ...idea,
