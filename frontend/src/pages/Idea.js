@@ -7,6 +7,7 @@ import { updateIdeas, getIdeaByID } from "../data/IdeaData";
 function Idea() {
   const canvasRef = useRef(null);
   const { id: ideaID } = useParams();
+  const [imageID, setImageID] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [ideaName, setIdeaName] = useState("");
   const [isErasing, setIsErasing] = useState(false);
@@ -40,8 +41,9 @@ function Idea() {
         }
   
         const existingIdea = await response.json();
-        console.log("Fetched idea:", existingIdea.image[0].data);
+        console.log("Fetched idea:", existingIdea.image[0]);
   
+        setImageID(existingIdea.image[0].imageID);
         // Use the fetched idea data to update state.
         setIdeaName(existingIdea.name);
         // Assumes that categories is an array; adjust if your data structure differs
@@ -151,7 +153,7 @@ function Idea() {
   const handleSave = async () => {
     const newIdea = {
       ideaID: ideaID || Date.now().toString(),
-      userID: user?.id || "default_user",
+      imageID: imageID,
       name: ideaName,
       content: "Canvas drawing",
       creationDate: new Date().toISOString(),
@@ -178,6 +180,7 @@ function Idea() {
     };
 
     try {
+      console.log("Saving new idea:", newIdea);
       if (ideaID) { // Update existing idea
         const response = await fetch(`http://localhost:3000/idea/${ideaID}`, {
           method: "PATCH",
@@ -189,6 +192,7 @@ function Idea() {
         });
   
         if (response.ok) {
+          console.log("Idea updated successfully");
           navigate("/home");
         } else {
           console.error("Failed to update idea");
